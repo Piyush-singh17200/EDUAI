@@ -1,0 +1,168 @@
+{
+  "users": {
+    "admin@carrental.com": {
+      "profile": {
+        "email": "admin@carrental.com",
+        "name": "Vishu saini",
+        "subjects": [
+          "math"
+        ],
+        "goals": "semseter",
+        "examDate": "2026-05-15",
+        "dailyTargetMinutes": 20
+      },
+      "studyLogs": [
+        {
+          "id": "log-1778416720401",
+          "subject": "General",
+          "topic": "HTML",
+          "minutes": 45,
+          "notes": "what is HTML full explain",
+          "createdAt": "2026-05-10T12:38:40.401Z"
+        }
+      ],
+      "quizResults": [],
+      "topics": {
+        "general::html": {
+          "id": "general::html",
+          "subject": "General",
+          "topic": "HTML",
+          "totalMinutes": 45,
+          "attempts": 0,
+          "correct": 0,
+          "incorrect": 0,
+          "skipped": 0,
+          "reviewStage": 0,
+          "nextReviewDate": "2026-05-11",
+          "lastStudiedAt": "2026-05-10T12:38:40.401Z",
+          "strength": 73,
+          "weaknessScore": 27
+        }
+      },
+      "revisions": [
+        {
+          "id": "rev-1778416720401-j137y",
+          "subject": "General",
+          "topic": "HTML",
+          "dueDate": "2026-05-11",
+          "status": "pending",
+          "reason": "Spaced repetition after study session",
+          "createdAt": "2026-05-10T12:38:40.401Z"
+        }
+      ],
+      "plannerTasks": [
+        {
+          "id": "plan-1778416767233-0",
+          "dueDate": "2026-05-10",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "concept",
+          "estimatedMinutes": 45,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Includes upcoming revision: HTML"
+        },
+        {
+          "id": "plan-1778416767233-1",
+          "dueDate": "2026-05-11",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "practice",
+          "estimatedMinutes": 60,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        },
+        {
+          "id": "plan-1778416767233-2",
+          "dueDate": "2026-05-12",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "revision",
+          "estimatedMinutes": 45,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        },
+        {
+          "id": "plan-1778416767233-3",
+          "dueDate": "2026-05-13",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "concept",
+          "estimatedMinutes": 45,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        },
+        {
+          "id": "plan-1778416767233-4",
+          "dueDate": "2026-05-14",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "practice",
+          "estimatedMinutes": 60,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        },
+        {
+          "id": "plan-1778416767233-5",
+          "dueDate": "2026-05-15",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "revision",
+          "estimatedMinutes": 45,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        },
+        {
+          "id": "plan-1778416767233-6",
+          "dueDate": "2026-05-16",
+          "subject": "General",
+          "topic": "HTML",
+          "title": "General: HTML",
+          "type": "concept",
+          "estimatedMinutes": 45,
+          "priority": "weak topic",
+          "status": "pending",
+          "reason": "Planned toward 2026-05-15"
+        }
+      ],
+      "focusSessions": [],
+      "streak": {
+        "current": 1,
+        "longest": 1,
+        "lastStudyDate": "2026-05-10"
+      }
+    },
+    "piyushsingh11092006@gmail.com": {
+      "profile": {
+        "email": "piyushsingh11092006@gmail.com",
+        "name": "Piyush_2797",
+        "subjects": [],
+        "goals": "",
+        "examDate": "",
+        "dailyTargetMinutes": 120
+      },
+      "studyLogs": [],
+      "quizResults": [],
+      "topics": {},
+      "revisions": [],
+      "plannerTasks": [],
+      "focusSessions": [],
+      "streak": {
+        "current": 0,
+        "longest": 0,
+        "lastStudyDate": ""
+      }
+    }
+  }
+}

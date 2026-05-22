@@ -1,0 +1,27 @@
+{
+  "name": "eduai-platform",
+  "version": "1.0.0",
+  "description": "AI-Powered Learning & Career Development Platform",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && node --watch index.js",
+    "build": "npm run build:client",
+    "build:client": "cd client && npm run build",
+    "start": "npm run build && cd server && node index.js",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "keywords": [
+    "AI",
+    "Learning",
+    "Career",
+    "Development"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
