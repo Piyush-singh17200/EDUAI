@@ -19,6 +19,7 @@ const MockInterview = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [evaluations, setEvaluations] = useState([]);
 
   // Scorecard & feedback states
   const [scorecard, setScorecard] = useState(null);
@@ -62,6 +63,7 @@ const MockInterview = () => {
         }
       ]);
       setQuestionCount(1);
+      setEvaluations([]);
       setStep('interview');
     } catch (err) {
       console.error(err);
@@ -95,14 +97,29 @@ const MockInterview = () => {
       });
 
       const data = response.data?.data;
+      const currentEvaluation = {
+        questionNumber: questionCount,
+        question: currentQuestion,
+        answer: candidateAnswer,
+        score: data.score,
+        strength: data.strength,
+        constructiveAdvice: data.constructiveAdvice,
+        modelAnswer: data.modelAnswer
+      };
+      const nextEvaluations = [...evaluations, currentEvaluation];
+      setEvaluations(nextEvaluations);
       
       if (questionCount >= maxQuestions) {
+        const averageScore = Math.round(
+          nextEvaluations.reduce((sum, item) => sum + Number(item.score || 0), 0) / nextEvaluations.length
+        );
         // Final question answered, compile and present the scorecard
         setScorecard({
-          score: data.score,
+          score: averageScore,
           strength: data.strength,
           constructiveAdvice: data.constructiveAdvice,
           modelAnswer: data.modelAnswer,
+          evaluations: nextEvaluations,
           finalSummary: "Excellent work! You have finished all 5 questions in the simulated technical assessment."
         });
         setStep('scorecard');
@@ -327,6 +344,7 @@ const MockInterview = () => {
                   onClick={() => {
                     if (window.confirm("Are you sure you want to end this interview session? Your progress will be discarded.")) {
                       setStep('setup');
+                      setEvaluations([]);
                     }
                   }}
                   className="text-xs text-slate-400 hover:text-red-400 transition bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg"
@@ -429,11 +447,14 @@ const MockInterview = () => {
                   Technical Interview Scorecard
                 </h1>
                 <p className="text-slate-400 text-xs md:text-sm mt-1">
-                  Evaluated criteria for: <strong className="text-slate-300 capitalize">{level} {role}</strong>
+                  Evaluated across {scorecard.evaluations?.length || 1} answers for: <strong className="text-slate-300 capitalize">{level} {role}</strong>
                 </p>
               </div>
               <button
-                onClick={() => setStep('setup')}
+                onClick={() => {
+                  setStep('setup');
+                  setEvaluations([]);
+                }}
                 className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/20 text-white font-bold rounded-xl flex items-center gap-2 transition text-xs shadow-lg shadow-indigo-950/50"
               >
                 <RefreshCw size={14} /> Restart Assessment
@@ -535,6 +556,24 @@ const MockInterview = () => {
                 </p>
               </div>
             </div>
+
+            {Array.isArray(scorecard.evaluations) && scorecard.evaluations.length > 0 && (
+              <div className="mb-8 rounded-2xl border border-slate-900 bg-slate-900/30 p-5">
+                <h3 className="mb-4 text-sm font-black text-slate-200">Question-by-question review</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {scorecard.evaluations.map((item) => (
+                    <div key={item.questionNumber} className="rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <p className="text-xs font-bold uppercase tracking-wider text-indigo-300">Question {item.questionNumber}</p>
+                        <span className="rounded-lg bg-indigo-500/10 px-2 py-1 text-xs font-bold text-indigo-300">{item.score}/100</span>
+                      </div>
+                      <p className="line-clamp-2 text-xs text-slate-400">{item.question}</p>
+                      <p className="mt-3 text-xs leading-relaxed text-slate-300">{item.constructiveAdvice}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Return action footer */}
             <div className="pt-6 border-t border-slate-900 flex items-center justify-between">

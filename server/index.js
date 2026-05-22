@@ -91,6 +91,11 @@ app.use('/api/todo', todoRoutes);
 app.use('/api/learning', adaptiveLearningRoutes);
 app.use('/api/interview', interviewRoutes);
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'Server is running' });
+});
+
 const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
@@ -140,16 +145,11 @@ io.on('connection', (socket) => {
 // Error handling
 app.use(errorHandler);
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'Server is running' });
-});
-
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📚 EduAI Platform Backend Started`);
+  console.log(`Server running on port ${PORT}`);
+  console.log('EduAI Platform backend started');
 });
 
 export { io };

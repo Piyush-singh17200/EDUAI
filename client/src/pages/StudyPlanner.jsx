@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Plus, Trash2, Zap, Target, Flame, Calendar, Coffee, AlertTriangle, CheckCircle2, ArrowLeft, X, GripVertical } from 'lucide-react';
+import { Clock, Plus, Trash2, Zap, Target, Flame, Calendar, Coffee, AlertTriangle, CheckCircle2, ArrowLeft, X, BookOpen, Lightbulb } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
@@ -60,24 +60,37 @@ const QUADRANTS = [
   }
 ];
 
+const DEFAULT_MATRIX_TASKS = {
+  'do-first': [
+    { id: '1', text: 'Complete Data Structures assignment (due tomorrow)', done: false },
+    { id: '2', text: 'Study for calculus mid-term exam', done: false }
+  ],
+  'schedule': [
+    { id: '3', text: 'Build portfolio project with React & Node.js', done: false },
+    { id: '4', text: 'Read 2 chapters of system design book', done: false }
+  ],
+  'delegate': [
+    { id: '5', text: 'Format lab report for submission', done: false }
+  ],
+  'eliminate': [
+    { id: '6', text: 'Reorganize old class notes folder', done: false }
+  ]
+};
+
+const MATRIX_STORAGE_KEY = 'eduai-study-matrix';
+
+const loadMatrixTasks = () => {
+  try {
+    const saved = localStorage.getItem(MATRIX_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : DEFAULT_MATRIX_TASKS;
+  } catch {
+    return DEFAULT_MATRIX_TASKS;
+  }
+};
+
 const StudyPlanner = () => {
   // Eisenhower Matrix state
-  const [tasks, setTasks] = useState({
-    'do-first': [
-      { id: '1', text: 'Complete Data Structures assignment (due tomorrow)', done: false },
-      { id: '2', text: 'Study for calculus mid-term exam', done: false }
-    ],
-    'schedule': [
-      { id: '3', text: 'Build portfolio project with React & Node.js', done: false },
-      { id: '4', text: 'Read 2 chapters of system design book', done: false }
-    ],
-    'delegate': [
-      { id: '5', text: 'Format lab report for submission', done: false }
-    ],
-    'eliminate': [
-      { id: '6', text: 'Reorganize old class notes folder', done: false }
-    ]
-  });
+  const [tasks, setTasks] = useState(loadMatrixTasks);
   const [showAddModal, setShowAddModal] = useState(null); // quadrant id or null
   const [newTaskText, setNewTaskText] = useState('');
 
@@ -93,6 +106,10 @@ const StudyPlanner = () => {
     duration: 60
   });
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  useEffect(() => {
+    localStorage.setItem(MATRIX_STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks]);
 
   // --- Eisenhower Matrix Handlers ---
   const addTask = (quadrantId) => {
@@ -572,8 +589,9 @@ const StudyPlanner = () => {
                               </div>
                               <p className="text-xs text-slate-300 mb-1">{block.activity}</p>
                               {block.resources && (
-                                <p className="text-[10px] text-slate-500">
-                                  📚 {block.resources?.join(', ')}
+                                <p className="flex items-start gap-1.5 text-[10px] text-slate-500">
+                                  <BookOpen size={12} className="mt-0.5 flex-shrink-0 text-indigo-300" />
+                                  <span>{block.resources?.join(', ')}</span>
                                 </p>
                               )}
                             </div>
@@ -584,7 +602,10 @@ const StudyPlanner = () => {
 
                     {optimized.recommendations && (
                       <div className="mt-6 p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/10">
-                        <h4 className="font-bold text-sm text-indigo-400 mb-2">💡 Pro Tips:</h4>
+                        <h4 className="font-bold text-sm text-indigo-400 mb-2 flex items-center gap-2">
+                          <Lightbulb size={15} />
+                          Pro Tips
+                        </h4>
                         <ul className="space-y-1">
                           {optimized.recommendations?.map((tip, idx) => (
                             <li key={idx} className="text-xs text-slate-400">• {tip}</li>

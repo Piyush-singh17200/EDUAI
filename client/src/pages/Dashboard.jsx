@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BookOpen, Code, Briefcase, Award, Zap, Target, Brain, CalendarDays, Flame, Trophy, Star, Sparkles, Plus, Check } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell } from 'recharts';
+import { BookOpen, Code, Briefcase, Award, Zap, Target, Brain, CalendarDays, Flame, Trophy, Star, Sparkles } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { useStore } from '../store';
 import api from '../utils/api';
 
@@ -16,30 +16,38 @@ const Dashboard = () => {
       .catch(() => setSummary(null));
   }, []);
 
-  // Performance Mock Data for Recharts
-  const studyTimeData = [
-    { name: 'Mon', minutes: 45, accuracy: 80 },
-    { name: 'Tue', minutes: 80, accuracy: 85 },
-    { name: 'Wed', minutes: 120, accuracy: 75 },
-    { name: 'Thu', minutes: 90, accuracy: 90 },
-    { name: 'Fri', minutes: 150, accuracy: 88 },
-    { name: 'Sat', minutes: 180, accuracy: 92 },
-    { name: 'Sun', minutes: 60, accuracy: 95 }
-  ];
+  const chartColors = ['#6366f1', '#22d3ee', '#a855f7', '#f59e0b', '#10b981', '#ec4899'];
+  const studyTimeData = (summary?.charts?.studyTime || []).map((item) => {
+    const accuracyPoint = (summary?.charts?.accuracy || []).find((entry) => entry.date === item.date);
+    return {
+      name: new Date(item.date).toLocaleDateString(undefined, { weekday: 'short' }),
+      minutes: item.minutes || 0,
+      accuracy: accuracyPoint?.accuracy || 0
+    };
+  });
 
-  const subjectStrengthData = [
-    { subject: 'Math', level: 85, color: '#6366f1' },
-    { subject: 'Science', level: 70, color: '#3b82f6' },
-    { subject: 'English', level: 90, color: '#a855f7' },
-    { subject: 'Coding', level: 95, color: '#ec4899' },
-    { subject: 'History', level: 75, color: '#f59e0b' }
-  ];
+  const subjectStrengthData = (summary?.charts?.topicStrength || []).length
+    ? summary.charts.topicStrength.map((item, index) => ({
+      subject: item.topic,
+      level: item.strength,
+      color: chartColors[index % chartColors.length]
+    }))
+    : (summary?.profile?.subjects || []).slice(0, 5).map((subject, index) => ({
+      subject,
+      level: 0,
+      color: chartColors[index % chartColors.length]
+    }));
 
   const badges = [
-    { id: 1, title: 'AI Scholar', desc: 'Asked 10 questions to Tutor', unlocked: true, icon: Sparkles, color: 'from-blue-400 to-indigo-500' },
-    { id: 2, title: 'ATS Conqueror', desc: 'Scored 85%+ on Resume', unlocked: true, icon: Trophy, color: 'from-amber-400 to-orange-500' },
-    { id: 3, title: 'Matrix Master', desc: 'Mapped Eisenhower Planner', unlocked: false, icon: Star, color: 'from-slate-500 to-slate-700' }
+    { id: 1, title: 'Focus Starter', desc: 'Log study time or a focus session', unlocked: (summary?.stats?.studyMinutes || 0) > 0, icon: Sparkles, color: 'from-blue-400 to-indigo-500' },
+    { id: 2, title: 'Accuracy Builder', desc: 'Reach 80% quiz accuracy', unlocked: (summary?.stats?.accuracy || 0) >= 80, icon: Trophy, color: 'from-amber-400 to-orange-500' },
+    { id: 3, title: 'Revision System', desc: 'Schedule spaced revisions', unlocked: (summary?.stats?.pendingRevisions || 0) > 0, icon: Star, color: 'from-emerald-500 to-teal-600' }
   ];
+  const unlockedBadges = badges.filter((badge) => badge.unlocked).length;
+  const totalStudyMinutes = summary?.stats?.studyMinutes || 0;
+  const xp = Math.min(500, Math.round(totalStudyMinutes * 1.2) + (summary?.stats?.accuracy || 0) + unlockedBadges * 50);
+  const level = Math.max(1, Math.floor(xp / 125) + 1);
+  const xpProgress = Math.round((xp / 500) * 100);
 
   const cards = [
     {
@@ -129,7 +137,7 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Current Streak</p>
-              <p className="text-xl font-black text-orange-400">{summary?.stats?.streak || 5} Days</p>
+              <p className="text-xl font-black text-orange-400">{summary?.stats?.streak || 0} Days</p>
             </div>
           </div>
         </motion.div>
@@ -156,7 +164,7 @@ const Dashboard = () => {
                   strokeWidth="8"
                   fill="transparent"
                   strokeDasharray="251.2"
-                  strokeDashoffset={251.2 - (251.2 * 340) / 500}
+                  strokeDashoffset={251.2 - (251.2 * xp) / 500}
                   strokeLinecap="round"
                   className="transition-all duration-1000 ease-out"
                 />
@@ -169,20 +177,20 @@ const Dashboard = () => {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-xs text-indigo-400 uppercase tracking-widest font-black">Level</span>
-                <span className="text-3xl font-black text-white">4</span>
+                <span className="text-3xl font-black text-white">{level}</span>
               </div>
             </div>
             <div className="flex-1">
               <div className="flex justify-between items-end mb-1">
                 <span className="text-sm font-bold text-slate-400">Total Experience Points</span>
-                <span className="text-xs text-pink-400 font-black tracking-wider">340 / 500 XP</span>
+                <span className="text-xs text-pink-400 font-black tracking-wider">{xp} / 500 XP</span>
               </div>
               <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800/80 p-[2px]">
-                <div className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full" style={{ width: '68%' }} />
+                <div className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full" style={{ width: `${xpProgress}%` }} />
               </div>
               <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
                 <Sparkles size={12} className="text-indigo-400" />
-                Earn 160 XP more to advance to Level 5!
+                {500 - xp} XP until the next milestone.
               </p>
             </div>
           </div>
@@ -194,7 +202,7 @@ const Dashboard = () => {
                 <Trophy className="text-amber-400" size={20} />
                 Unlocked Achievements
               </h3>
-              <span className="text-xs font-bold bg-slate-800 text-indigo-400 px-3 py-1 rounded-full border border-slate-700">2 / 3 Unlocked</span>
+              <span className="text-xs font-bold bg-slate-800 text-indigo-400 px-3 py-1 rounded-full border border-slate-700">{unlockedBadges} / {badges.length} Unlocked</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {badges.map((b) => {
@@ -255,7 +263,7 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-6 flex items-center text-indigo-400 group-hover:translate-x-2 transition-transform">
                         <span className="text-sm font-bold uppercase tracking-wider">Launch Module</span>
-                        <span className="ml-2 font-bold text-lg">→</span>
+                        <span className="ml-2 font-bold text-lg">-&gt;</span>
                       </div>
                     </div>
                   </Link>
@@ -285,6 +293,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="h-64 w-full">
+              {studyTimeData.some((entry) => entry.minutes || entry.accuracy) ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={studyTimeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
@@ -305,6 +314,9 @@ const Dashboard = () => {
                   <Area type="monotone" dataKey="accuracy" stroke="#ec4899" strokeWidth={3} fillOpacity={1} fill="url(#colorAccuracy)" />
                 </AreaChart>
               </ResponsiveContainer>
+              ) : (
+                <DashboardEmpty text="Log study time or submit a quiz to activate this chart." />
+              )}
             </div>
           </div>
 
@@ -315,6 +327,7 @@ const Dashboard = () => {
               <p className="text-xs text-slate-500 mb-6">Subject concept mastery levels based on AI evaluation</p>
             </div>
             <div className="h-64 w-full">
+              {subjectStrengthData.length ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={subjectStrengthData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <CartesianGrid stroke="#161427" strokeDasharray="3 3" vertical={false} />
@@ -328,6 +341,9 @@ const Dashboard = () => {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              ) : (
+                <DashboardEmpty text="Add subjects or take quizzes to build your mastery map." />
+              )}
             </div>
           </div>
         </motion.div>
@@ -385,5 +401,11 @@ const Dashboard = () => {
     </div>
   );
 };
+
+const DashboardEmpty = ({ text }) => (
+  <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-800 bg-slate-950/30 px-6 text-center text-sm text-slate-500">
+    {text}
+  </div>
+);
 
 export default Dashboard;
